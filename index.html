@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Loto Togo</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1B5E20" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Roboto, Arial, sans-serif;
+    background: #f4f6f4;
+    color: #1b1b1b;
+    padding-bottom: 24px;
+  }
+  header {
+    background: #1B5E20;
+    color: white;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .day-title {
+    margin: 18px 12px 8px;
+    font-weight: bold;
+    color: #1B5E20;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .step-card {
+    background: white;
+    margin: 10px 12px;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    cursor: pointer;
+    border-left: 5px solid #1B5E20;
+  }
+  .step-number {
+    background: #1B5E20;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .step-text { flex: 1; }
+  .step-title { font-weight: bold; font-size: 15px; }
+  .step-sub { font-size: 12px; color: #666; margin-top: 2px; }
+  .see-all-link {
+    text-align: center;
+    color: #1B5E20;
+    font-weight: bold;
+    padding: 16px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .card {
+    background: white;
+    margin: 6px 12px;
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    cursor: pointer;
+  }
+  .badge {
+    background: #1B5E20;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .card-info { flex: 1; }
+  .card-info .name { font-weight: bold; }
+  .card-info .sub { font-size: 13px; color: #555; margin-top: 2px; }
+  .chevron { color: #999; }
+
+  .screen { display: none; padding: 12px; }
+  .screen.active { display: block; }
+
+  .num-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1B5E20;
+    color: white;
+    font-size: 13px;
+    margin-right: 6px;
+  }
+
+  .history-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .history-date { font-weight: bold; margin-bottom: 6px; font-size: 13px; color: #555; }
+
+  label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 14px; }
+  select, input[type=date] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  .number-inputs { display: flex; gap: 6px; margin-top: 4px; }
+  .number-inputs input {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .btn-primary {
+    width: 100%;
+    background: #1B5E20;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 24px;
+    cursor: pointer;
+  }
+  .btn-back {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+  .empty-msg { text-align: center; color: #777; margin-top: 40px; }
+  .info-banner {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #1B5E20;
+  }
+  .number-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .number-grid .num-btn {
+    aspect-ratio: 1;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .number-grid .num-btn.selected {
+    background: #1B5E20;
+    color: white;
+    border-color: #1B5E20;
+  }
+  .number-grid .num-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    background: white;
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 4px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #555;
+  }
+  .tab-btn.active {
+    background: #1B5E20;
+    color: white;
+    font-weight: bold;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .counter-row {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 4px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+  .counter-row .cnum {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1B5E20;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .counter-row .cinfo { flex: 1; font-size: 13px; color: #444; }
+  .counter-row .ccount { font-weight: bold; color: #1B5E20; font-size: 15px; margin-left: 8px; }
+
+  .match-good { color: #1B5E20; font-weight: bold; }
+  .match-result-banner {
+    text-align: center;
+    padding: 18px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 14px;
+    justify-content: center;
+  }
+  .blinking-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e53935;
+    box-shadow: 0 0 6px #e53935;
+    animation: blink-red 1s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes blink-red {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(0.8); }
+  }
+</style>
+</head>
+<body>
+
+<header id="main-header">
+  <div style="display:flex; align-items:center;">
+    <button id="back-btn" class="btn-back" style="display:none;">←</button>
+    <h1 id="header-title">Loto Togo - Les 12 jeux</h1>
+  </div>
+  <div>
+    <button id="tools-btn" title="Prédictions & Statistiques">📊</button>
+    <button id="admin-btn" title="Saisir un résultat">✏️</button>
+  </div>
+</header>
+
+<!-- ÉCRAN ACCUEIL -->
+<div id="screen-home" class="screen active"></div>
+
+<!-- ÉCRAN DÉTAIL D'UN JEU -->
+<div id="screen-detail" class="screen"></div>
+
+<!-- ÉCRAN ADMIN -->
+<div id="screen-admin" class="screen">
+  <label>Choisis le jeu concerné :</label>
+  <select id="admin-game-select">
+    <option value="">-- Sélectionner un jeu parmi les 12 --</option>
+  </select>
+
+  <label>Date du tirage :</label>
+  <input type="date" id="admin-date" />
+
+  <label>Les 5 numéros gagnants (entre 1 et 90) :</label>
+  <div class="number-inputs">
+    <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="num0" />
+    <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="num1" />
+    <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="num2" />
+    <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="num3" />
+    <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="num4" />
+  </div>
+
+  <button class="btn-primary" id="save-draw-btn">Enregistrer le résultat</button>
+</div>
+
+<!-- ÉCRAN OUTILS & STATISTIQUES -->
+<div id="screen-tools" class="screen">
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="predictions">🔮 Prédictions</button>
+    <button class="tab-btn" data-tab="counter">🔢 Compteur</button>
+    <button class="tab-btn" data-tab="check">✅ Vérifier gains</button>
+  </div>
+
+  <!-- ONGLET PRÉDICTIONS -->
+  <div class="tab-content active" id="tab-predictions">
+    <label>Sur quel jeu baser le calcul ?</label>
+    <select id="pred-game-scope">
+      <option value="all">Tous les jeux confondus</option>
+    </select>
+
+    <label>Type de prédiction :</label>
+    <select id="generator-mode">
+      <option value="random">🎲 Totalement aléatoire</option>
+      <option value="frequent">🔥 Fréquents (numéros qui sortent le plus)</option>
+      <option value="ecart">⏳ Écarts (numéros en retard, pas sortis depuis longtemps)</option>
+      <option value="mixte">⚖️ Mixte (fréquents + en retard combinés)</option>
+      <option value="manual">✋ Je choisis certains numéros moi-même</option>
+    </select>
+
+    <div id="manual-picker" style="display:none; margin-top:14px;">
+      <label>Touche autant de numéros que tu veux dans le tableau (1 à 90) : chaque grille générée piochera 5 numéros parmi ta sélection.</label>
+      <div id="number-grid" class="number-grid"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <div id="manual-selected-count" class="sub"></div>
+        <button id="manual-reset-btn" type="button" style="background:none; border:1px solid #1B5E20; color:#1B5E20; border-radius:6px; padding:6px 12px; font-size:13px; cursor:pointer;">🗑️ Effacer</button>
+      </div>
+    </div>
+
+    <div id="stats-info" class="info-banner" style="display:none; margin-top:14px;">
+      Basé sur <span id="stats-draw-count">0</span> tirage(s) enregistré(s) pour ce périmètre.
+    </div>
+
+    <label style="margin-top:18px;">Combien de grilles veux-tu générer ?</label>
+    <select id="generator-count">
+      <option value="1">1 grille</option>
+      <option value="2">2 grilles</option>
+      <option value="3" selected>3 grilles</option>
+      <option value="5">5 grilles</option>
+      <option value="10">10 grilles</option>
+      <option value="15">15 grilles</option>
+      <option value="20">20 grilles</option>
+      <option value="30">30 grilles</option>
+      <option value="40">40 grilles</option>
+      <option value="50">50 grilles</option>
+      <option value="60">60 grilles</option>
+    </select>
+
+    <button class="btn-primary" id="generate-btn">🔮 Générer mes grilles</button>
+    <button id="clear-grids-btn" type="button" style="width:100%; background:none; border:1px solid #999; color:#555; border-radius:8px; padding:10px; font-size:14px; margin-top:8px; cursor:pointer;">🗑️ Effacer les grilles générées</button>
+
+    <div id="generated-grids" style="margin-top:20px;"></div>
+  </div>
+
+  <!-- ONGLET COMPTEUR -->
+  <div class="tab-content" id="tab-counter">
+    <label>Sur quel jeu baser le compteur ?</label>
+    <select id="counter-game-scope">
+      <option value="all">Tous les jeux confondus</option>
+    </select>
+    <div class="info-banner" style="margin-top:14px;">
+      <span id="counter-draw-count">0</span> tirage(s) pris en compte. Le "Cumul" indique
+      combien de fois le numéro est sorti. L'"Écart" indique depuis combien de
+      tirages il n'est pas ressorti.
+    </div>
+    <div id="counter-table" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- ONGLET VÉRIFIER GAINS -->
+  <div class="tab-content" id="tab-check">
+    <label>Choisis le jeu :</label>
+    <select id="check-game-select">
+      <option value="">-- Sélectionner un jeu --</option>
+    </select>
+
+    <label>Choisis le tirage à comparer :</label>
+    <select id="check-draw-select">
+      <option value="">-- Choisis d'abord un jeu --</option>
+    </select>
+
+    <label>Entre ta grille jouée (5 numéros) :</label>
+    <div class="number-inputs">
+      <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="check-num0" />
+      <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="check-num1" />
+      <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="check-num2" />
+      <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="check-num3" />
+      <input type="text" inputmode="numeric" maxlength="2" class="num-input-2" id="check-num4" />
+    </div>
+
+    <button class="btn-primary" id="check-btn">✅ Vérifier mes gains</button>
+
+    <div id="check-result" style="margin-top:20px;"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
